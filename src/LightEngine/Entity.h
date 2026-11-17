@@ -53,6 +53,10 @@ private:
     void Draw(SDL_Renderer* renderer) const;
     void Initialize(float radius, const Color& color);
 
+    void TryCollide(Entity* entity);
+    void TryCollide(const Rectangle& rect);
+    void TryCollide(const Line& rect);
+
     friend class GameManager;
     friend class Scene;
 };

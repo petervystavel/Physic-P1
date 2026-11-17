@@ -21,6 +21,7 @@ class GameManager
     std::list<Entity*> mEntitiesToAdd;
 
     std::list<Line> mLines;
+    std::list<Rectangle> mRectangles;
 
     SDL_Window* mpWindow;
     SDL_Renderer* mpRenderer;

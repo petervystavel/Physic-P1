@@ -166,35 +166,17 @@ void GameManager::Update()
         for (; it2 != mEntities.end(); ++it2)
         {
             Entity* otherEntity = *it2;
+            entity->TryCollide(otherEntity);
+        }
 
-            continue;
-            //#TODO
-
-            entity->OnCollision(otherEntity);
-            otherEntity->OnCollision(entity);
+        for (const Rectangle& rectangle : mRectangles)
+        {
+            entity->TryCollide(rectangle);
         }
 
         for (const Line& line : mLines)
         {
-            //Detect
-            Vector2f AB = line.point - entity->GetPosition();
-            Vector2f normal = line.normal;
-
-            float distance = Vector2f::Dot(AB, normal);
-            float overlap = entity->GetRadius() - distance;
-            if (overlap < 0)
-                continue;
-
-            //Correction
-            Vector2f overlapCorrection = -1 * normal * overlap;
-            entity->mCircle.position += overlapCorrection;
-
-            //Bounce
-            float dot = Vector2f::Dot(entity->mVelocity, normal);
-            Vector2f vn = dot * normal;
-            Vector2f vt = entity->mVelocity - vn;
-
-            entity->mVelocity = -1 * vn + vt;
+            entity->TryCollide(line);
         }
     }
 
