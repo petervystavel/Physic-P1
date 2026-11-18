@@ -54,9 +54,15 @@ void Entity::Update()
 {
     float dt = GetDeltaTime();
 
-    mCircle.position += mVelocity * dt;
-
     OnUpdate();
+}
+
+void Entity::FixedUpdate()
+{
+    float fixedDt = GameManager::Get()->GetFixedDeltaTime();
+    Vector2f gravity = { 0.f, 981.f };
+    mVelocity += gravity * fixedDt;
+    mCircle.position += mVelocity * fixedDt;
 }
 
 void Entity::Draw(SDL_Renderer* renderer) const

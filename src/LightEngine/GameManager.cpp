@@ -139,6 +139,13 @@ void GameManager::Run()
 
         Update();
 
+        mAccFixedDt += mDeltaTime;
+        while (mAccFixedDt >= mFixedDeltaTime)
+        {
+            FixedUpdate();
+            mAccFixedDt -= mFixedDeltaTime;
+        }
+
         Draw();
     }
 }
@@ -154,6 +161,30 @@ void GameManager::Update()
     {
         if (entity->ToDestroy() == false)
             entity->Update();
+    }
+
+    for (auto it = mEntities.begin(); it != mEntities.end(); )
+    {
+        Entity* entity = *it;
+
+        if (entity->ToDestroy() == false)
+        {
+            ++it;
+            continue;
+        }
+
+        delete entity;
+        it = mEntities.erase(it);
+    }
+}
+
+void GameManager::FixedUpdate()
+{
+    //Update
+    for (Entity* entity : mEntities)
+    {
+        if (entity->ToDestroy() == false)
+            entity->FixedUpdate();
     }
 
     //Collision
@@ -178,20 +209,6 @@ void GameManager::Update()
         {
             entity->TryCollide(line);
         }
-    }
-
-    for (auto it = mEntities.begin(); it != mEntities.end(); )
-    {
-        Entity* entity = *it;
-
-        if (entity->ToDestroy() == false)
-        {
-            ++it;
-            continue;
-        }
-
-        delete entity;
-        it = mEntities.erase(it);
     }
 }
 

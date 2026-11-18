@@ -31,6 +31,8 @@ class GameManager
     Scene* mpScene;
 
     float mDeltaTime;
+    float mAccFixedDt;
+    float mFixedDeltaTime = 1.f /60.f;
 
     int mWindowWidth;
     int mWindowHeight;
@@ -45,6 +47,7 @@ private:
     bool Initialize(int width, int height, const char* title, Color clearColor);
     void Run();
     void Update();
+    void FixedUpdate();
     void Draw();
 
     void SetDeltaTime(uint64 deltaTimeNS) { mDeltaTime = static_cast<float>(deltaTimeNS) / 1000000000.f; }
@@ -64,6 +67,7 @@ public:
     void LaunchScene(int width = 1280, int height = 720, const char* title = "LightEngine", Color clearColor = Color::Black);
 
     float GetDeltaTime() const { return mDeltaTime; }
+    float GetFixedDeltaTime() const { return mFixedDeltaTime; }
     Scene* GetScene() const { return mpScene; }
 
     friend class Scene;

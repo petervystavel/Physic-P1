@@ -50,6 +50,7 @@ protected:
 
 private:
     void Update();
+    void FixedUpdate();
     void Draw(SDL_Renderer* renderer) const;
     void Initialize(float radius, const Color& color);
 
