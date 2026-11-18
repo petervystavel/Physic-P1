@@ -16,10 +16,13 @@ protected:
     bool mToDestroy = false;
     Vector2f mVelocity;
 
+    float mMass = 1.0f;
+
 public:
     void SetPosition(Vector2f position, float ratioX = 0.5f, float ratioY = 0.5f);
     void SetTag(int tag) { mTag = tag; }
     void SetVelocity(Vector2f velocity ) { mVelocity = velocity; }
+    void SetMass(float mass) { mMass = mass; }
 
     float GetRadius() const { return mCircle.radius; }
 

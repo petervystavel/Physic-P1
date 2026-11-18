@@ -8,8 +8,11 @@ void SampleScene::OnInitialize()
 {
     mpEntity1 = CreateEntity<DummyEntity>(40.f, Color::Cyan);
     mpEntity1->SetPosition({ 300.f, 360.f });
-    mpEntity2 = CreateEntity<DummyEntity>(40.f, Color::Cyan);
+    mpEntity1->SetMass(1);
+
+    mpEntity2 = CreateEntity<DummyEntity>(40.f*2, Color::Cyan);
     mpEntity2->SetPosition({ 600.f, 360.f });
+    mpEntity2->SetMass(10);
 
     GameManager::Get()->AddLine({ 0, 0 }, { 0, -1 }); //TOP
     GameManager::Get()->AddLine({ 0, 0 }, { -1, 0 }); //LEFT

@@ -82,31 +82,40 @@ float Entity::GetDeltaTime() const
 
 void Entity::TryCollide(Entity* other)
 {
-    Vector2f CenterA = GetPosition();
-    Vector2f CenterB = other->GetPosition();
+    Vector2f centerA = GetPosition();
+    Vector2f centerB = other->GetPosition();
 
-    Vector2f AB = CenterB - CenterA;
+    Vector2f AB = centerB - centerA;
 
-    float Overlap =  GetRadius() + other->GetRadius() - AB.Magnitude();
-
-    if (Overlap < 0)
+    float overlap =  GetRadius() + other->GetRadius() - AB.Magnitude();
+    if (overlap < 0)
         return;
 
-    Vector2f Normal = AB.Normalized();
+    Vector2f normal = AB.Normalized();
+    Vector2f translation = normal * overlap * 0.5f; //#TODO
 
-    Vector2f Translation = Normal * Overlap * 0.5f;
+    mCircle.position -= translation;
+    other->mCircle.position += translation;
 
-    mCircle.position -= Translation;
-    other->mCircle.position += Translation;
+    Vector2f relativeVelocity = mVelocity - other->mVelocity;
+    float closingSpeed = Vector2f::Dot(relativeVelocity, normal);
 
-    Vector2f vnA = Normal * Vector2f::Dot(mVelocity, Normal);
-    Vector2f vtA = mVelocity - vnA;
+    float totalMass = mMass + other->mMass;
+    float ratioA = mMass / totalMass;
+    float ratioB = 1.f - ratioA;
 
-    Vector2f vnB = Normal * Vector2f::Dot(other->mVelocity, Normal);
-    Vector2f vtB = other->mVelocity - vnB;
+    Vector2f deltaA = -1 * normal * ratioB * closingSpeed;
+    Vector2f deltaB = normal * ratioA * closingSpeed;
 
-    mVelocity = vnB + vtA;
-    other->mVelocity = vnA + vtB;
+    //Annuler le rapprochement
+    mVelocity += deltaA;
+    other->mVelocity += deltaB;
+
+    float restitution = 0.5f;
+
+    //Créer l'éloignement
+    mVelocity += deltaA * restitution;
+    other->mVelocity += deltaB * restitution;
 
     OnCollision(other);
     other->OnCollision(this);
