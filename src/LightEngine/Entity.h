@@ -61,6 +61,9 @@ private:
     void TryCollide(const Rectangle& rect);
     void TryCollide(const Line& rect);
 
+    float WillCollide(const Entity* other, float dt) const;
+    void Bounce(Entity* other);
+
     friend class GameManager;
     friend class Scene;
 };

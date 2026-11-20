@@ -1,6 +1,10 @@
 #pragma once
 
 #include <cstdint>
+#include "Vector.h"
+
+struct Segment;
+struct Circle;
 
 using int8 = std::int8_t;
 using int16 = std::int16_t;
@@ -15,3 +19,11 @@ using uint64 = std::uint64_t;
 constexpr float PI = 3.14159265f;
 constexpr float DEG_TO_RAD = PI / 180.f;
 constexpr float RAD_TO_DEG = 180.f / PI;
+
+struct IntersectInfo
+{
+    bool found;
+    Vector2f point;
+};
+
+IntersectInfo Intersect(const Circle& c, const Segment& s);

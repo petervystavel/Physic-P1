@@ -64,6 +64,11 @@ float Vector2f::Magnitude() const
     return std::hypot(x, y);
 }
 
+float Vector2f::MagnitudeSqr() const
+{
+    return x * x + y * y;
+}
+
 Vector2f Vector2f::operator+(const Vector2f& other) const
 {
     return { x + other.x, y + other.y };

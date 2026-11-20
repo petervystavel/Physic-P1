@@ -15,6 +15,8 @@ struct SDL_Renderer;
 struct TTF_TextEngine;
 struct TTF_Font;
 
+#define USE_CCD true
+
 class GameManager
 {
     std::list<Entity*> mEntities;
@@ -47,7 +49,8 @@ private:
     bool Initialize(int width, int height, const char* title, Color clearColor);
     void Run();
     void Update();
-    void FixedUpdate();
+    void FixedUpdateDCD(); // DCD
+    void FixedUpdateCCD(); // CCD
     void Draw();
 
     void SetDeltaTime(uint64 deltaTimeNS) { mDeltaTime = static_cast<float>(deltaTimeNS) / 1000000000.f; }

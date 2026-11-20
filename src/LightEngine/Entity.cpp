@@ -60,8 +60,8 @@ void Entity::Update()
 void Entity::FixedUpdate()
 {
     float fixedDt = GameManager::Get()->GetFixedDeltaTime();
-    Vector2f gravity = { 0.f, 981.f };
-    mVelocity += gravity * fixedDt;
+    //Vector2f gravity = { 0.f, 981.f };
+    //mVelocity += gravity * fixedDt; //#TODO put in gamemanager
     mCircle.position += mVelocity * fixedDt;
 }
 
@@ -218,4 +218,59 @@ void Entity::TryCollide(const Line& line)
     Vector2f vt = mVelocity - vn;
 
     mVelocity = -1 * vn + vt;
+}
+
+void Entity::Bounce(Entity* other)
+{
+    Vector2f normal = (other->GetPosition() - GetPosition()).Normalized();
+    Vector2f relativeVelocity = mVelocity - other->mVelocity;
+    float closingSpeed = Vector2f::Dot(relativeVelocity, normal);
+
+    float totalMass = mMass + other->mMass;
+    float ratioA = mMass / totalMass;
+    float ratioB = 1.f - ratioA;
+
+    Vector2f deltaA = -1 * normal * ratioB * closingSpeed;
+    Vector2f deltaB = normal * ratioA * closingSpeed;
+
+    //Annuler le rapprochement
+    mVelocity += deltaA;
+    other->mVelocity += deltaB;
+
+    float restitution = 0.5f;
+
+    //Créer l'éloignement
+    mVelocity += deltaA * restitution;
+    other->mVelocity += deltaB * restitution;
+}
+
+float Entity::WillCollide(const Entity* other, float dt) const
+{
+    Vector2f relativeVelocity = mVelocity - other->mVelocity;
+    Vector2f direction = other->GetPosition() - GetPosition();
+    direction.Normalize();
+   
+    float closingSpeed = Vector2f::Dot(relativeVelocity, direction);
+    if (closingSpeed <= 0.f)
+        return -1;
+
+    Vector2f deplacement = relativeVelocity * dt;
+    Segment AE;
+    AE.a = GetPosition();
+    AE.b = AE.a + deplacement;
+
+    Circle B;
+    B.position = other->GetPosition();
+    B.radius = GetRadius() + other->GetRadius();
+
+    IntersectInfo info = Intersect(B, AE);
+    if (info.found == false)
+        return -1;
+
+    float distance = (info.point - AE.a).Magnitude();
+    float ratio = distance / deplacement.Magnitude();
+
+    float impactDT = ratio * dt;
+
+    return impactDT;
 }

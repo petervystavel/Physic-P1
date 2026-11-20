@@ -142,7 +142,7 @@ void GameManager::Run()
         mAccFixedDt += mDeltaTime;
         while (mAccFixedDt >= mFixedDeltaTime)
         {
-            FixedUpdate();
+            USE_CCD ? FixedUpdateCCD() : FixedUpdateDCD();
             mAccFixedDt -= mFixedDeltaTime;
         }
 
@@ -178,7 +178,7 @@ void GameManager::Update()
     }
 }
 
-void GameManager::FixedUpdate()
+void GameManager::FixedUpdateDCD()
 {
     //Update
     for (Entity* entity : mEntities)
@@ -210,6 +210,57 @@ void GameManager::FixedUpdate()
             entity->TryCollide(line);
         }
     }
+}
+
+void GameManager::FixedUpdateCCD()
+{
+    float remainingDt = mFixedDeltaTime;
+
+    while( remainingDt > 0)
+    {
+        bool found = false;
+
+        //Collision
+        for (auto it1 = mEntities.begin(); it1 != mEntities.end(); ++it1)
+        {
+            Entity* entity = *it1;
+
+            auto it2 = it1;
+            ++it2;
+            for (; it2 != mEntities.end(); ++it2)
+            {
+                Entity* otherEntity = *it2;
+
+                float impactDT = entity->WillCollide(otherEntity, remainingDt);
+
+                if (impactDT < 0.f)
+                    continue;
+
+                found = true;
+
+                entity->mCircle.position += impactDT * entity->mVelocity;
+                otherEntity->mCircle.position += impactDT * otherEntity->mVelocity;
+
+                entity->Bounce(otherEntity);
+
+
+                remainingDt -= impactDT;
+            }
+        }
+
+        if (found == false)
+        {
+            for (Entity* entity : mEntities)
+            {
+                entity->mCircle.position += remainingDt * entity->mVelocity;
+            }
+
+            break;
+        }
+    }
+
+
+    
 }
 
 void GameManager::Draw()
